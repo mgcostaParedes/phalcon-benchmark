@@ -4,32 +4,24 @@ use Phalcon\Http\Response;
 
 function binarySearch(Array $arr, $x)
 {
-    // check for empty array
     if (count($arr) === 0) return false;
     $low = 0;
     $high = count($arr) - 1;
 
     while ($low <= $high) {
-
-        // compute middle index
         $mid = floor(($low + $high) / 2);
 
-        // element found at mid
         if($arr[$mid] == $x) {
             return true;
         }
 
         if ($x < $arr[$mid]) {
-            // search the left side of the array
             $high = $mid -1;
         }
         else {
-            // search the right side of the array
             $low = $mid + 1;
         }
     }
-
-    // If we reach here element x doesnt exist
     return false;
 }
 
@@ -82,6 +74,21 @@ $app->get('/country', function() {
         $response = new Response();
         $response->setJsonContent(['data' => $result]);
         return $response;
+});
+
+$app->get('/country-complex', function() {
+	$db = \Phalcon\Di::getDefault()->get('db');
+	$statement = $db->prepare("Select apps_countries.*, apps_countries_detailed.* from apps_countries left join apps_countries_detailed on apps_countries.country_code = apps_countries_detailed.countryCode order by apps_countries_detailed.geonameId desc");
+	$statement->execute();
+	$results = $statement->fetchAll();
+
+    foreach($results as $key => $result) {
+        $result['newValue'] = 'index_' . $key;
+    }
+	
+	$response = new Response();
+    $response->setJsonContent(['data' => $result]);
+    return $response;
 });
 	
 $app->get('/search', function() {
