@@ -87,7 +87,7 @@ $app->get('/country-complex', function() {
     }
 	
 	$response = new Response();
-    $response->setJsonContent(['data' => $result]);
+    $response->setJsonContent(['data' => $results]);
     return $response;
 });
 	
